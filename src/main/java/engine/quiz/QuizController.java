@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +16,12 @@ public class QuizController {
     private int counter = 1;
 
     @PostMapping("quizzes")
-    public Quiz addQuiz(@RequestBody Quiz quiz) {
+    public Quiz addQuiz(@Valid @RequestBody Quiz quiz) {
         quiz.setId(counter);
         counter++;
+        if (quiz.getAnswer() == null) {
+            quiz.setAnswer(new int[]{});
+        }
         quizzes.add(quiz);
         return quiz;
     }
@@ -42,7 +46,7 @@ public class QuizController {
     }
 
     @PostMapping("quizzes/{id}/solve")
-    public Answer solveQuiz(@RequestParam("answer") int answer, @PathVariable int id) {
+    public Result solveQuiz(@PathVariable int id, @RequestBody Answer answer) {
         Quiz quiz = null;
         for (Quiz q : quizzes) {
             if (q.getId() == id) {
@@ -54,9 +58,9 @@ public class QuizController {
                     HttpStatus.NOT_FOUND, "entity not found"
             );
         if (quiz.isCorrect(answer)) {
-            return new Answer(true);
+            return new Result(true);
         }
-        return new Answer(false);
+        return new Result(false);
     }
 
 }
