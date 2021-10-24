@@ -1,14 +1,12 @@
 package engine.quiz;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import engine.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -32,6 +30,9 @@ public class Quiz {
     private String[] options;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private int[] answer;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User author;
 
     public Quiz(String title, String text, String[] options, int[] answer) {
         this.title = title;
